@@ -114,6 +114,10 @@
         text-align: center;
         box-shadow: 0 2px 4px var(--shadow-primary);
         transition: var(--transition-base);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
       .study-time-display {
@@ -351,6 +355,11 @@
         <div class="study-time">
           <h2>🎓</h2>
           <div class="study-time-display">0:00</div>
+          <div class="controls">
+            <button class="btn clear-btn">🧹</button>
+            <button class="btn confirm-btn" style="display: none">☑️</button>
+            <button class="btn cancel-btn" style="display: none">❎</button>
+          </div>
         </div>
 
         <div class="timer-container">
@@ -578,7 +587,7 @@
           const elapsed = this.totalTime - this.remainingTime;
           this.data.totalStudyTime += elapsed;
           dataManager.save(this.data);
-          studyTimeDisplay.textContent = dataManager.formatTime(
+          studyTimeManager.display.textContent = dataManager.formatTime(
             this.data.totalStudyTime
           );
 
@@ -602,7 +611,7 @@
           // 将全部时间加入总学习时长
           this.data.totalStudyTime += this.totalTime;
           dataManager.save(this.data);
-          studyTimeDisplay.textContent = dataManager.formatTime(
+          studyTimeManager.display.textContent = dataManager.formatTime(
             this.data.totalStudyTime
           );
 
@@ -856,12 +865,65 @@
         }
       }
 
+      // 总学习时长控制器
+      class StudyTimeManager {
+        constructor() {
+          this.display = document.querySelector(".study-time-display");
+          this.clearBtn = document.querySelector(".clear-btn");
+          this.confirmBtn = document.querySelector(".confirm-btn");
+          this.cancelBtn = document.querySelector(".cancel-btn");
+
+          this.data = dataManager.init();
+
+          this.init();
+        }
+
+        init() {
+          // 初始化显示
+          this.display.textContent = dataManager.formatTime(
+            this.data.totalStudyTime
+          );
+
+          // 事件监听
+          this.clearBtn.addEventListener("click", () =>
+            this.showConfirmDialog()
+          );
+          this.confirmBtn.addEventListener("click", () =>
+            this.clearStudyTime()
+          );
+          this.cancelBtn.addEventListener("click", () =>
+            this.hideConfirmDialog()
+          );
+        }
+
+        showConfirmDialog() {
+          // 显示确认和取消按钮，隐藏清空按钮
+          this.clearBtn.style.display = "none";
+          this.confirmBtn.style.display = "inline-block";
+          this.cancelBtn.style.display = "inline-block";
+        }
+
+        hideConfirmDialog() {
+          // 隐藏确认和取消按钮，显示清空按钮
+          this.clearBtn.style.display = "inline-block";
+          this.confirmBtn.style.display = "none";
+          this.cancelBtn.style.display = "none";
+        }
+
+        clearStudyTime() {
+          // 清空学习时长
+          this.data.totalStudyTime = 0;
+          dataManager.save(this.data);
+          this.display.textContent = dataManager.formatTime(0);
+
+          // 隐藏确认和取消按钮，显示清空按钮
+          this.hideConfirmDialog();
+        }
+      }
+
       // 初始化应用
       const data = dataManager.init();
-      const studyTimeDisplay = document.querySelector(".study-time-display");
-      studyTimeDisplay.textContent = dataManager.formatTime(
-        data.totalStudyTime
-      );
+      const studyTimeManager = new StudyTimeManager();
 
       // 初始化番茄钟
       const pomodoroElement = document.querySelector(".pomodoro");
