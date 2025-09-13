@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-Hans-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="🎓🍅♨️ - 高效记录进度的番茄钟" />
+    <meta name="keywords" content="进度跟踪,效率工具,时间管理" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⌚%3C/text%3E%3C/svg%3E"
+    />
     <title>🎓🍅♨️</title>
     <style>
+      /* CSS 变量定义 - 浅色主题 */
+      :root {
+        /* 背景色 */
+        --bg-primary: #f5f5f5;
+        --bg-secondary: #fff;
+        --bg-tertiary: #f0f0f0;
+
+        /* 文字颜色 */
+        --text-primary: #333;
+        --text-secondary: #4caf50;
+        --text-accent-1: #ff5722;
+        --text-accent-2: #2196f3;
+
+        /* 边框和进度条 */
+        --border-primary: #e0e0e0;
+
+        /* 阴影 */
+        --shadow-primary: rgba(0, 0, 0, 0.1);
+
+        /* 透明度 */
+        --opacity-disabled: 0.7;
+        --opacity-button-disabled: 0.5;
+
+        /* 过渡效果 */
+        --transition-base: all 0.3s ease;
+        --transition-progress: width 1s linear, stroke-dashoffset 1s linear;
+      }
+
+      /* 深色主题变量 */
+      @media (prefers-color-scheme: dark) {
+        :root {
+          /* 背景色 */
+          --bg-primary: #1a1a1a;
+          --bg-secondary: #2d2d2d;
+          --bg-tertiary: #3a3a3a;
+
+          /* 文字颜色 */
+          --text-primary: #e0e0e0;
+          --text-secondary: #66bb6a;
+          --text-accent-1: #ff7043;
+          --text-accent-2: #42a5f5;
+
+          /* 边框和进度条 */
+          --border-primary: #4a4a4a;
+
+          /* 阴影 */
+          --shadow-primary: rgba(0, 0, 0, 0.3);
+        }
+      }
+
       /* 重置样式 */
       * {
         margin: 0;
@@ -15,10 +72,11 @@
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
           sans-serif;
-        background-color: #f5f5f5;
-        color: #333;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
         height: 100vh;
         overflow: hidden;
+        transition: var(--transition-base);
       }
 
       /* 主容器 */
@@ -29,10 +87,12 @@
         flex-direction: column;
         padding: 20px;
         gap: 20px;
+        overflow: scroll;
       }
 
       /* 标题 */
       .title {
+        display: none;
         text-align: center;
         font-size: 2rem;
         margin-bottom: 10px;
@@ -48,17 +108,19 @@
 
       /* 总学习时长 */
       .study-time {
-        background-color: #fff;
+        background-color: var(--bg-secondary);
         border-radius: 8px;
         padding: 20px;
         text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px var(--shadow-primary);
+        transition: var(--transition-base);
       }
 
       .study-time-display {
         font-size: 3rem;
         font-weight: bold;
-        color: #4caf50;
+        color: var(--text-secondary);
+        transition: var(--transition-base);
       }
 
       /* 番茄钟和空闲钟容器 */
@@ -71,7 +133,7 @@
 
       /* 番茄钟 */
       .pomodoro {
-        background-color: #fff;
+        background-color: var(--bg-secondary);
         border-radius: 8px;
         padding: 20px;
         flex: 2;
@@ -79,12 +141,13 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px var(--shadow-primary);
+        transition: var(--transition-base);
       }
 
       /* 空闲钟 */
       .idle {
-        background-color: #fff;
+        background-color: var(--bg-secondary);
         border-radius: 8px;
         padding: 20px;
         flex: 1;
@@ -92,7 +155,8 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 4px var(--shadow-primary);
+        transition: var(--transition-base);
       }
 
       /* 圆形进度条容器 */
@@ -111,18 +175,19 @@
 
       .circular-progress .background {
         fill: none;
-        stroke: #e0e0e0;
+        stroke: var(--border-primary);
         stroke-width: 10;
+        transition: var(--transition-base);
       }
 
       .circular-progress .progress {
         fill: none;
-        stroke: #ff5722;
+        stroke: var(--text-accent-1);
         stroke-width: 10;
         stroke-linecap: round;
         stroke-dasharray: 565.48;
         stroke-dashoffset: 565.48;
-        transition: stroke-dashoffset 1s linear;
+        transition: var(--transition-progress);
       }
 
       .circular-progress .time-display {
@@ -132,23 +197,33 @@
         transform: translate(-50%, -50%);
         font-size: 2rem;
         font-weight: bold;
+        color: inherit;
+        transition: var(--transition-base);
+      }
+
+      .idle .time-display {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: inherit;
+        transition: var(--transition-base);
       }
 
       /* 条形进度条 */
       .linear-progress {
         width: 100%;
         height: 20px;
-        background-color: #e0e0e0;
+        background-color: var(--border-primary);
         border-radius: 10px;
         margin: 20px 0;
         overflow: hidden;
+        transition: var(--transition-base);
       }
 
       .linear-progress .progress {
         height: 100%;
-        background-color: #2196f3;
+        background-color: var(--text-accent-2);
         width: 0%;
-        transition: width 1s linear;
+        transition: var(--transition-progress);
       }
 
       /* 时间输入 */
@@ -157,21 +232,22 @@
         border: none;
         background: transparent;
         text-align: center;
-        width: 100px;
+        width: 120px;
         font-weight: bold;
-        transition: all 0.3s ease;
+        transition: var(--transition-base);
+        color: inherit;
       }
 
       .time-input:focus {
         outline: none;
-        background-color: #f0f0f0;
+        background-color: var(--bg-tertiary);
         border-radius: 4px;
         transform: scale(1.05);
       }
 
       .time-input:disabled {
         cursor: not-allowed;
-        opacity: 0.7;
+        opacity: var(--opacity-disabled);
       }
 
       /* 控制按钮 */
@@ -188,11 +264,12 @@
         cursor: pointer;
         padding: 10px;
         border-radius: 50%;
-        transition: all 0.3s ease;
+        transition: var(--transition-base);
+        color: inherit;
       }
 
       .btn:hover {
-        background-color: #f0f0f0;
+        background-color: var(--bg-tertiary);
         transform: scale(1.1);
       }
 
@@ -201,7 +278,7 @@
       }
 
       .btn:disabled {
-        opacity: 0.5;
+        opacity: var(--opacity-button-disabled);
         cursor: not-allowed;
         transform: none;
       }
@@ -231,7 +308,7 @@
           grid-template-columns: 2fr 1fr;
           grid-template-rows: auto 1fr 1fr;
           gap: 20px;
-          transition: all 0.3s ease;
+          transition: var(--transition-base);
         }
 
         .title {
@@ -241,19 +318,19 @@
         .pomodoro {
           grid-row: 2 / 4;
           grid-column: 1;
-          transition: all 0.3s ease;
+          transition: var(--transition-base);
         }
 
         .study-time {
           grid-row: 2;
           grid-column: 2;
-          transition: all 0.3s ease;
+          transition: var(--transition-base);
         }
 
         .idle {
           grid-row: 3;
           grid-column: 2;
-          transition: all 0.3s ease;
+          transition: var(--transition-base);
         }
 
         .content {
@@ -285,7 +362,7 @@
                 <circle class="progress" cx="100" cy="100" r="90"></circle>
               </svg>
               <div class="time-display">
-                <input type="text" class="time-input" value="25:00" readonly />
+                <input type="text" class="time-input" value="25:00" />
               </div>
             </div>
             <div class="controls">
@@ -301,7 +378,7 @@
               <div class="progress"></div>
             </div>
             <div class="time-display">
-              <input type="text" class="time-input" value="5:00" readonly />
+              <input type="text" class="time-input" value="5:00" />
             </div>
             <div class="controls">
               <button class="btn start-btn">▶️</button>
@@ -378,6 +455,9 @@
           );
           this.updateProgress();
 
+          // 确保初始状态下输入框可编辑
+          this.timeInput.readOnly = false;
+
           // 事件监听
           this.startBtn.addEventListener("click", () => this.start());
           this.pauseBtn.addEventListener("click", () => this.pause());
@@ -396,7 +476,7 @@
                   !isNaN(minutes) &&
                   !isNaN(seconds) &&
                   minutes >= 0 &&
-                  minutes <= 99 &&
+                  minutes <= 1440 &&
                   seconds >= 0 &&
                   seconds <= 59
                 ) {
@@ -405,12 +485,18 @@
                   this.data.pomodoroTime = this.totalTime;
                   dataManager.save(this.data);
                   this.updateProgress();
+                } else {
+                  // 输入无效，重置为之前的有效值
+                  this.timeInput.value = dataManager.formatCountdown(
+                    this.remainingTime
+                  );
                 }
+              } else {
+                // 格式无效，重置为之前的有效值
+                this.timeInput.value = dataManager.formatCountdown(
+                  this.remainingTime
+                );
               }
-              // 重置为有效格式
-              this.timeInput.value = dataManager.formatCountdown(
-                this.remainingTime
-              );
             }
           });
 
@@ -420,14 +506,33 @@
             // 只允许数字和冒号
             value = value.replace(/[^0-9:]/g, "");
 
-            // 自动格式化
-            if (value.length > 2 && value.indexOf(":") === -1) {
-              value = value.slice(0, 2) + ":" + value.slice(2);
+            // 处理冒号位置
+            const colonIndex = value.indexOf(":");
+
+            if (colonIndex === -1) {
+              // 没有冒号，自动在倒数第二位前添加冒号
+              if (value.length >= 3) {
+                value = value.slice(0, -2) + ":" + value.slice(-2);
+              }
+            } else {
+              // 有冒号，确保冒号后只有两位数字
+              const parts = value.split(":");
+              if (parts.length === 2) {
+                const minutes = parts[0];
+                let seconds = parts[1];
+
+                // 限制秒数为两位
+                if (seconds.length > 2) {
+                  seconds = seconds.slice(0, 2);
+                }
+
+                value = minutes + ":" + seconds;
+              }
             }
 
-            // 限制长度
-            if (value.length > 5) {
-              value = value.slice(0, 5);
+            // 限制总长度（分钟最多4位 + 冒号 + 秒数2位 = 7位）
+            if (value.length > 7) {
+              value = value.slice(0, 7);
             }
 
             e.target.value = value;
@@ -572,6 +677,9 @@
           );
           this.updateProgress();
 
+          // 确保初始状态下输入框可编辑
+          this.timeInput.readOnly = false;
+
           // 事件监听
           this.startBtn.addEventListener("click", () => this.start());
           this.pauseBtn.addEventListener("click", () => this.pause());
@@ -590,7 +698,7 @@
                   !isNaN(minutes) &&
                   !isNaN(seconds) &&
                   minutes >= 0 &&
-                  minutes <= 99 &&
+                  minutes <= 1440 &&
                   seconds >= 0 &&
                   seconds <= 59
                 ) {
@@ -599,12 +707,18 @@
                   this.data.idleTime = this.totalTime;
                   dataManager.save(this.data);
                   this.updateProgress();
+                } else {
+                  // 输入无效，重置为之前的有效值
+                  this.timeInput.value = dataManager.formatCountdown(
+                    this.remainingTime
+                  );
                 }
+              } else {
+                // 格式无效，重置为之前的有效值
+                this.timeInput.value = dataManager.formatCountdown(
+                  this.remainingTime
+                );
               }
-              // 重置为有效格式
-              this.timeInput.value = dataManager.formatCountdown(
-                this.remainingTime
-              );
             }
           });
 
@@ -614,14 +728,33 @@
             // 只允许数字和冒号
             value = value.replace(/[^0-9:]/g, "");
 
-            // 自动格式化
-            if (value.length > 2 && value.indexOf(":") === -1) {
-              value = value.slice(0, 2) + ":" + value.slice(2);
+            // 处理冒号位置
+            const colonIndex = value.indexOf(":");
+
+            if (colonIndex === -1) {
+              // 没有冒号，自动在倒数第二位前添加冒号
+              if (value.length >= 3) {
+                value = value.slice(0, -2) + ":" + value.slice(-2);
+              }
+            } else {
+              // 有冒号，确保冒号后只有两位数字
+              const parts = value.split(":");
+              if (parts.length === 2) {
+                const minutes = parts[0];
+                let seconds = parts[1];
+
+                // 限制秒数为两位
+                if (seconds.length > 2) {
+                  seconds = seconds.slice(0, 2);
+                }
+
+                value = minutes + ":" + seconds;
+              }
             }
 
-            // 限制长度
-            if (value.length > 5) {
-              value = value.slice(0, 5);
+            // 限制总长度（分钟最多4位 + 冒号 + 秒数2位 = 7位）
+            if (value.length > 7) {
+              value = value.slice(0, 7);
             }
 
             e.target.value = value;

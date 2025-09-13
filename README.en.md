@@ -63,7 +63,7 @@ The application uses responsive layout that automatically adapts to different sc
 
 - **Frontend**: Native HTML, CSS, JavaScript
 - **Data Storage**: Browser `localStorage`
-- **Styling**: Native CSS, no external dependencies
+- **Styling**: Native CSS, no external dependencies, with support for dark and light themes
 
 ### Core Architecture
 
