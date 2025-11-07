@@ -5,11 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="🎓🍅♨️ - 高效记录进度的番茄钟" />
     <meta name="keywords" content="进度跟踪,效率工具,时间管理" />
+
+    <!-- PWA 相关元标签 -->
+    <meta name="theme-color" content="#4caf50" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="番茄钟" />
+    <meta name="application-name" content="番茄钟" />
+    <meta name="msapplication-TileColor" content="#4caf50" />
+    <meta name="msapplication-config" content="browserconfig.xml" />
+
+    <!-- PWA Manifest 和图标 -->
+    <link rel="manifest" href="manifest.json" />
     <link
       rel="icon"
       type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E⌚%3C/text%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234caf50'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E"
     />
+    <link
+      rel="apple-touch-icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%234caf50' rx='24'/%3E%3Ctext x='90' y='110' font-size='90' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E"
+    />
+
     <title>🎓🍅♨️</title>
     <style>
       /* CSS 变量定义 - 浅色主题 */
@@ -361,7 +378,7 @@
             <button class="btn cancel-btn" style="display: none">❎</button>
           </div>
           <!-- <div class="controls"> -->
-            <!-- TODO: 实现“📄（导出数据文件）、⚙️（应用数据文件）和 🏠（[源码](https://github.com/PJ-568/time-of-studying)）”数据管理按钮和相关功能 -->
+          <!-- TODO: 实现“📄（导出数据文件）、⚙️（应用数据文件）和 🏠（[源码](https://github.com/PJ-568/time-of-studying)）”数据管理按钮和相关功能 -->
           <!-- </div> -->
         </div>
 
@@ -935,6 +952,213 @@
       // 初始化空闲钟
       const idleElement = document.querySelector(".idle");
       const idleTimer = new IdleTimer(idleElement);
+
+      // PWA 相关功能
+      // 注册 Service Worker
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((registration) => {
+              console.log("Service Worker 注册成功:", registration.scope);
+
+              // 检查是否有更新
+              registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener("statechange", () => {
+                  if (
+                    newWorker.state === "installed" &&
+                    navigator.serviceWorker.controller
+                  ) {
+                    // 有新版本可用
+                    console.log("发现新版本的应用");
+                    // 这里可以添加更新提示
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.error("Service Worker 注册失败:", error);
+            });
+        });
+      }
+
+      // PWA 安装提示 - 使用图标而非文字
+      let deferredPrompt;
+      const installPromptElement = document.createElement("div");
+      installPromptElement.id = "install-prompt";
+      installPromptElement.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow-primary);
+        display: none;
+        align-items: center;
+        gap: 16px;
+        z-index: 1000;
+        animation: slideUp 0.3s ease-out;
+      `;
+
+      // 使用图标表示安装应用
+      const installIcon = document.createElement("span");
+      installIcon.textContent = "📱";
+      installIcon.style.cssText = "font-size: 24px;";
+      installPromptElement.appendChild(installIcon);
+
+      const installButton = document.createElement("button");
+      installButton.textContent = "⬇️";
+      installButton.className = "btn install-btn";
+      installButton.title = "安装应用";
+      installButton.style.cssText = `
+        background-color: var(--text-secondary);
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 20px;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      installPromptElement.appendChild(installButton);
+
+      const dismissButton = document.createElement("button");
+      dismissButton.textContent = "❌";
+      dismissButton.className = "btn dismiss-btn";
+      dismissButton.title = "忽略";
+      dismissButton.style.cssText = `
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        padding: 4px;
+        color: var(--text-primary);
+      `;
+      installPromptElement.appendChild(dismissButton);
+
+      // 添加动画样式
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes slideUp {
+          from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+          from { transform: translateX(-50%) translateY(0); opacity: 1; }
+          to { transform: translateX(-50%) translateY(100px); opacity: 0; }
+        }
+        
+        .install-prompt-dismiss {
+          animation: slideDown 0.3s ease-out forwards;
+        }
+      `;
+      document.head.appendChild(style);
+
+      document.body.appendChild(installPromptElement);
+
+      // 监听安装提示事件
+      window.addEventListener("beforeinstallprompt", (e) => {
+        // 阻止默认的安装提示
+        e.preventDefault();
+        // 存储事件以便后续使用
+        deferredPrompt = e;
+
+        // 检查用户是否已经安装了应用
+        if (!localStorage.getItem("pwa-install-dismissed")) {
+          // 显示安装提示
+          installPromptElement.style.display = "flex";
+        }
+      });
+
+      // 安装按钮点击事件
+      installButton.addEventListener("click", async () => {
+        if (deferredPrompt) {
+          // 显示安装提示
+          deferredPrompt.prompt();
+          // 等待用户响应
+          const { outcome } = await deferredPrompt.userChoice;
+          console.log(`用户${outcome === "accepted" ? "接受" : "拒绝"}了安装`);
+          // 重置 deferredPrompt
+          deferredPrompt = null;
+
+          // 隐藏安装提示
+          hideInstallPrompt();
+        }
+      });
+
+      // 忽略按钮点击事件
+      dismissButton.addEventListener("click", () => {
+        hideInstallPrompt();
+        // 记录用户已经忽略过安装提示
+        localStorage.setItem("pwa-install-dismissed", "true");
+      });
+
+      // 隐藏安装提示的函数
+      function hideInstallPrompt() {
+        installPromptElement.classList.add("install-prompt-dismiss");
+        setTimeout(() => {
+          installPromptElement.style.display = "none";
+          installPromptElement.classList.remove("install-prompt-dismiss");
+        }, 300);
+      }
+
+      // 检查应用是否已经安装
+      window.addEventListener("appinstalled", () => {
+        console.log("应用已成功安装");
+        hideInstallPrompt();
+        localStorage.setItem("pwa-installed", "true");
+      });
+
+      // 处理应用启动时的 URL 参数
+      function handleAppAction() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const action = urlParams.get("action");
+
+        if (action === "pomodoro") {
+          // 自动开始番茄钟
+          setTimeout(() => {
+            if (!pomodoroTimer.isRunning) {
+              pomodoroTimer.start();
+            }
+          }, 1000);
+        } else if (action === "idle") {
+          // 自动开始空闲钟
+          setTimeout(() => {
+            if (!idleTimer.isRunning) {
+              idleTimer.start();
+            }
+          }, 1000);
+        } else if (action === "stats") {
+          // 高亮显示学习时长区域
+          const studyTimeElement = document.querySelector(".study-time");
+          studyTimeElement.style.animation = "pulse 2s ease-in-out 3";
+
+          const pulseStyle = document.createElement("style");
+          pulseStyle.textContent = `
+            @keyframes pulse {
+              0%, 100% { transform: scale(1); }
+              50% { transform: scale(1.05); }
+            }
+          `;
+          document.head.appendChild(pulseStyle);
+
+          setTimeout(() => {
+            studyTimeElement.style.animation = "";
+          }, 6000);
+        }
+      }
+
+      // 处理应用启动
+      handleAppAction();
 
       // 请求通知权限
       if ("Notification" in window && Notification.permission === "default") {

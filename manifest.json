@@ -1,0 +1,91 @@
+{
+  "name": "🎓🍅♨️",
+  "short_name": "🍅",
+  "description": "🎓🍅♨️ - 高效记录进度的番茄钟应用",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#4caf50",
+  "orientation": "any",
+  "scope": "/",
+  "lang": "zh-Hans-CN",
+  "dir": "ltr",
+  "categories": ["productivity", "education", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234caf50'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' fill='%234caf50' rx='24'/%3E%3Ctext x='96' y='120' font-size='96' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%234caf50' rx='64'/%3E%3Ctext x='256' y='320' font-size='256' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "开始番茄钟",
+      "short_name": "番茄钟",
+      "description": "快速开始 25 分钟番茄钟计时",
+      "url": "/?action=pomodoro",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23ff5722' rx='16'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🍅%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "开始休息",
+      "short_name": "休息",
+      "description": "快速开始 5 分钟休息计时",
+      "url": "/?action=idle",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232196f3' rx='16'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E♨️%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "查看学习统计",
+      "short_name": "统计",
+      "description": "查看总学习时长",
+      "url": "/?action=stats",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%234caf50' rx='16'/%3E%3Ctext x='50' y='65' font-size='50' text-anchor='middle' fill='white'%3E🎓%3C/text%3E%3C/svg%3E",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 640'%3E%3Crect width='360' height='640' fill='%23f5f5f5'/%3E%3Ctext x='180' y='320' font-size='24' text-anchor='middle' fill='%23333'%3E番茄钟应用截图%3C/text%3E%3C/svg%3E",
+      "sizes": "360x640",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1280 720'%3E%3Crect width='1280' height='720' fill='%23f5f5f5'/%3E%3Ctext x='640' y='360' font-size='48' text-anchor='middle' fill='%23333'%3E番茄钟应用桌面视图%3C/text%3E%3C/svg%3E",
+      "sizes": "1280x720",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+}
